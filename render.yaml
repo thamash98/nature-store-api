@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: ceylone-nature-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__Key
+        sync: false
+      - key: Jwt__Issuer
+        value: CeyloneNatureApi
+      - key: Jwt__Audience
+        value: CeyloneNatureClient
+      - key: PayPal__Mode
+        value: sandbox
+      - key: PayPal__ClientId
+        sync: false
+      - key: PayPal__ClientSecret
+        sync: false
+      - key: Cors__AllowedOrigins
+        sync: false
+      - key: Seed__AdminEmail
+        sync: false
+      - key: Seed__AdminPassword
+        sync: false
+
+databases:
+  - name: ceylone-nature-db
+    plan: free
+    databaseName: ceylon_nature
+    user: ceylon_nature

@@ -1,0 +1,33 @@
+@CeyloneNature.Api_HostAddress = http://localhost:5080
+
+### Categories
+GET {{CeyloneNature.Api_HostAddress}}/api/categories
+Accept: application/json
+
+### Products (paginated, filterable)
+GET {{CeyloneNature.Api_HostAddress}}/api/products?page=1&pageSize=6
+Accept: application/json
+
+### Admin login
+POST {{CeyloneNature.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ceylonnature.com",
+  "password": "CHANGE_ME"
+}
+
+### Register a customer
+POST {{CeyloneNature.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "SomePassword123"
+}
+
+### Admin: dashboard stats (requires Bearer token from login above)
+GET {{CeyloneNature.Api_HostAddress}}/api/admin/stats
+Authorization: Bearer {{token}}
+Accept: application/json
