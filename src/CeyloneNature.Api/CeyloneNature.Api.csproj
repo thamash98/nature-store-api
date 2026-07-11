@@ -9,9 +9,12 @@
 
   <!-- Bakes ASPNETCORE_ENVIRONMENT into the generated web.config so IIS/IIS Express
        (which does not read launchSettings.json the way `dotnet run` does) still
-       runs in Development and serves Swagger. Debug-only so Release/Docker
-       publishes for Render/Railway are unaffected. -->
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+       runs in Development and serves Swagger/user-secrets. Applies regardless of
+       Debug/Release — IIS/IIS Express is only ever used as a local Windows dev
+       convenience in this project; the real production target is the Dockerfile
+       (Render/Railway), which never reads web.config or IIS settings at all, so
+       this has no effect on that deployment path. -->
+  <PropertyGroup>
     <EnvironmentName>Development</EnvironmentName>
   </PropertyGroup>
 
