@@ -17,7 +17,15 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // JWT Auth
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured.");
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+    throw new InvalidOperationException(
+        "Jwt:Key is not configured. Set it via `dotnet user-secrets set \"Jwt:Key\" \"<value>\"` " +
+        "(local dev) or the Jwt__Key environment variable (hosted environments) — never in appsettings.json.");
+if (Encoding.UTF8.GetByteCount(jwtKey) < 32)
+    throw new InvalidOperationException(
+        $"Jwt:Key is only {Encoding.UTF8.GetByteCount(jwtKey) * 8} bits long, but HS256 requires at least 256 bits (32 bytes). " +
+        "Generate a longer key, e.g. `openssl rand -base64 64`, and set it via `dotnet user-secrets set \"Jwt:Key\" \"<value>\"`.");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
