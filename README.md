@@ -68,9 +68,21 @@ All values below can be set via `appsettings.json`, user-secrets (local dev), or
 
 Both `render.yaml` and `railway.json` are provided, targeting the included `Dockerfile` (a multi-stage build that restores/publishes the whole solution then runs `CeyloneNature.Api.dll`).
 
-1. Provision a managed PostgreSQL instance on the same platform (or use `render.yaml`'s `databases` block, which does this for Render automatically).
-2. Set the environment variables listed above in the platform's dashboard (Render: service → Environment; Railway: service → Variables). Use the double-underscore form, e.g. `ConnectionStrings__DefaultConnection`.
-3. Set `Cors__AllowedOrigins` to your deployed Cloudflare Pages URL (e.g. `https://ceylon-nature-store.pages.dev`).
-4. Deploy — on startup the app runs `Database.MigrateAsync()` and seeds roles/admin/catalog data automatically, so no manual migration step is needed against the production database.
+### Database: card-free option (recommended)
+
+Render's own bundled free Postgres (via its Blueprint flow, or `render.yaml`'s commented-out `databases` block) currently requires a payment method on file for account verification, even though the tier itself is free. To avoid that, provision Postgres externally instead — both are genuinely free with no card required:
+
+- **[Neon](https://neon.tech)** — recommended; free tier auto-resumes on the next query after idling, so a quiet admin dashboard doesn't need a manual restart.
+- **[Supabase](https://supabase.com)** — also free, but pauses inactive free projects after ~1 week and requires a manual dashboard click to resume.
+
+Either gives you a `postgres://user:pass@host/db` connection string — paste it directly into `ConnectionStrings__DefaultConnection`; the API normalizes that URI format to what Npgsql expects automatically (see `CeyloneNature.Infrastructure/DependencyInjection.cs`).
+
+### Steps
+
+1. On Render: **New +** → **Web Service** (not Blueprint, to skip the bundled-Postgres card prompt) → connect the repo → it detects the `Dockerfile` automatically. On Railway: **New Project** → **Deploy from GitHub repo**.
+2. Provision Postgres externally (Neon/Supabase, see above) and copy its connection string.
+3. Set the environment variables listed above in the platform's dashboard (Render: service → Environment; Railway: service → Variables), using the double-underscore form, e.g. `ConnectionStrings__DefaultConnection`.
+4. Set `Cors__AllowedOrigins` to your deployed Cloudflare Pages URL (e.g. `https://ceylon-nature-store.pages.dev`).
+5. Deploy — on startup the app runs `Database.MigrateAsync()` and seeds roles/admin/catalog data automatically, so no manual migration step is needed against the production database.
 
 The API listens on port `8080` inside the container (`ASPNETCORE_URLS`), which both Render and Railway detect automatically.

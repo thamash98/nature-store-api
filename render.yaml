@@ -28,8 +28,16 @@ services:
       - key: Seed__AdminPassword
         sync: false
 
-databases:
-  - name: ceylone-nature-db
-    plan: free
-    databaseName: ceylon_nature
-    user: ceylon_nature
+# No `databases:` block here on purpose: Render's Blueprint flow provisions
+# its bundled free Postgres through the same account-verification path that
+# requires a card on file. Use an external free Postgres instead (Neon or
+# Supabase both offer a genuinely card-free free tier) and paste its
+# connection string into ConnectionStrings__DefaultConnection above — the
+# API accepts the postgres:// URI format either provider hands out.
+# If you'd rather use Render's own managed Postgres and are fine adding a
+# card, uncomment this block and redeploy via Blueprint:
+# databases:
+#   - name: ceylone-nature-db
+#     plan: free
+#     databaseName: ceylon_nature
+#     user: ceylon_nature
